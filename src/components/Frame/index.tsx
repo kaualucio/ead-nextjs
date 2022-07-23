@@ -49,7 +49,7 @@ const Frame = ({ urlImage, alt, size = 'medium' }: FrameProps) => {
   }
 
   return (
-    <div className={`hidden md:block ${dimensions.frame.width} ${dimensions.frame.height} p-1 rounded-full border-4 border-primary`}>
+    <div className={` ${dimensions.frame.width} ${dimensions.frame.height} p-1 rounded-full border-4 border-primary`}>
       <Image 
         src={urlImage}
         alt={alt}

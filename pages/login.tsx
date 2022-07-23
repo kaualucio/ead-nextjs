@@ -38,7 +38,7 @@ const Login = () => {
                       type="email" 
                       placeholder="E-mail" 
                       name="email" 
-                      className=" outline-none bg-transparent h-full w-full placeholder:text-white"
+                      className=" outline-none bg-transparent h-full w-full placeholder:text-highlight placeholder:text-sm"
                       />
                   </div>
 
@@ -52,7 +52,7 @@ const Login = () => {
                       type="password" 
                       placeholder="Senha" 
                       name="password" 
-                      className=" outline-none bg-transparent h-full w-full placeholder:text-white"
+                      className=" outline-none bg-transparent h-full w-full placeholder:text-highlight placeholder:text-sm"
                       />
                   </div>
                   <div className="text-left mt-[-8px] pl-1">

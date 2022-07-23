@@ -45,7 +45,7 @@ const Home: NextPageWithLayout = () => {
               </div>
               <div className="w-full lg:w-3/5 p-5">
                 <div className="w-full rounded-lg h-96">
-                <iframe width="100%" height="100%" src="https://www.youtube.com/embed/nxUw6B05pkc" title="Video de apresentação da plataforma" frameBorder="0" allowFullScreen={false} className="m-0 p-0 rounded-lg shadow-md"></iframe>
+                  <iframe width="100%" height="100%" src="https://www.youtube.com/embed/S9uPNppGsGo"  title="Video de apresentação da plataforma" frameBorder="0" allowFullScreen={false} className="m-0 p-0 rounded-lg shadow-md"></iframe>
                 </div>
               </div>
             </section>
