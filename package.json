@@ -9,21 +9,27 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@prisma/client": "^4.1.0",
     "axios": "^0.27.2",
+    "jsonwebtoken": "^8.5.1",
     "jwt-decode": "^3.1.2",
     "next": "12.1.6",
     "nookies": "^2.5.2",
+    "prisma": "^4.1.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-icons": "^4.4.0",
     "react-player": "^2.10.1",
-    "react-reveal": "^1.2.2"
+    "react-reveal": "^1.2.2",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@types/cookies": "^0.7.7",
+    "@types/jsonwebtoken": "^8.5.8",
     "@types/node": "18.0.0",
     "@types/react": "18.0.14",
     "@types/react-dom": "18.0.5",
+    "@types/uuid": "^8.3.4",
     "autoprefixer": "^10.4.7",
     "eslint": "8.18.0",
     "eslint-config-next": "12.1.6",

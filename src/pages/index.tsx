@@ -6,12 +6,12 @@ import { FaRegArrowAltCircleUp } from 'react-icons/fa'
 
 import type { NextPageWithLayout } from './_app'
 
-import MotiveSingle from '../src/components/HomePageComponents/MotiveSingle'
-import {TrainingContainer} from '../src/components/HomePageComponents/TrainingContainer'
-import {TrainingInformation} from '../src/components/HomePageComponents/TrainingInformation'
-import { LinkButton } from '../src/components/HomePageComponents/LinkButton'
-import { training } from '../src/utils/training'
-import { Layout } from '../src/components/Layout'
+import MotiveSingle from '../components/HomePageComponents/MotiveSingle'
+import {TrainingContainer} from '../components/HomePageComponents/TrainingContainer'
+import {TrainingInformation} from '../components/HomePageComponents/TrainingInformation'
+import { LinkButton } from '../components/HomePageComponents/LinkButton'
+import { training } from '../utils/training'
+import { Layout } from '../components/Layout'
 
 const Home: NextPageWithLayout = () => {
   const trainingsInfo = training

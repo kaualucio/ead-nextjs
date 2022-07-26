@@ -5,11 +5,10 @@ export function getAPIClient(ctx?: any) {
   const { 'access_token': access_token } = parseCookies(ctx)
 
   const api = axios.create({
-    baseURL: 'http://localhost:3333'
+    baseURL: 'http://localhost:3000/api'
   })
 
   api.interceptors.request.use(config => {
-    console.log(config);
 
     return config;
   })

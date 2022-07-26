@@ -1,0 +1,87 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["referentialIntegrity"]
+}
+
+datasource db {
+  provider             = "mysql"
+  url                  = env("DATABASE_URL")
+  shadowDatabaseUrl    = env("SHADOW_DATABASE_URL")
+  referentialIntegrity = "prisma"
+}
+
+model User {
+  id                String   @id @unique @default(uuid())
+  name              String
+  email             String   @unique
+  password          String
+  urlImage          String
+  hasTrainingAccess String
+  lastTrainingSeen  Json?
+  created_at        DateTime @default(now())
+  updated_at        DateTime @default(now())
+}
+
+model Training {
+  id             String     @id @unique @default(uuid())
+  title          String
+  slug           String
+  description    String
+  thumbnail      String
+  totalTime      Int
+  totalResources Int
+  certified      Boolean
+  educator       Educator[]
+  topics         Topic[]
+  classes        Class[]
+  created_at     DateTime   @default(now())
+  updated_at     DateTime   @default(now())
+}
+
+model Educator {
+  id         String    @id @unique @default(uuid())
+  training   Training? @relation(fields: [trainingId], references: [id])
+  trainingId String?
+  name       String
+  urlImage   String
+  about      String
+  topics     Topic[]
+  created_at DateTime  @default(now())
+  updated_at DateTime  @default(now())
+}
+
+model Topic {
+  id          String    @id @unique @default(uuid())
+  training    Training? @relation(fields: [trainingId], references: [id])
+  trainingId  String?
+  educator    Educator? @relation(fields: [educatorId], references: [id])
+  educatorId  String?
+  title       String
+  slug        String
+  description String
+  totalVideos Int
+  totalTime   Int
+  resources   Json
+  classes     Class[]
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @default(now())
+}
+
+model Class {
+  id          String    @id @unique @default(uuid())
+  topic       Topic?    @relation(fields: [topicId], references: [id])
+  topicId     String?
+  training    Training? @relation(fields: [trainingId], references: [id])
+  trainingId  String?
+  title       String
+  slug        String
+  urlVideo    String
+  description String
+  watched     Boolean
+  resources   Json
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @default(now())
+}

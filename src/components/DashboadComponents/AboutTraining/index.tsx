@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { HiOutlineFolderDownload } from 'react-icons/hi'
 import { BiMoviePlay, BiTrophy } from 'react-icons/bi'
 
@@ -9,9 +9,15 @@ import { useRouter } from 'next/router'
 import { topics } from '../../../utils/topics'
 import Link from 'next/link'
 import { Frame } from '../../Frame'
+import { api } from '../../../services/api'
 
 const AboutTraining = ({ training }: any) => {
-  
+  const [educator, setEducator] = useState<any[]>(null)
+  useEffect(() => {
+    api.get(`/educator/training/${training.id}`).then(({data}) => {
+      setEducator(data)
+    })
+  }, [training])
 
   return (
     <div className="flex flex-col gap-7 lg:gap-0 lg:flex-row h-full">
@@ -55,12 +61,12 @@ const AboutTraining = ({ training }: any) => {
             <h2 className="text-text-color text-xl font-bold mb-5">Professores</h2>
             <div className="w-full p-3 rounded-lg ">  
                 {
-                  training.educator.map((item: any) => (
-                    <div key={item.id} className="flex items-center gap-2">
-                      <Frame urlImage={item.urlImage || ''} size="small" alt={item.name ?? 'Foto do educador do curso'} />
+                  educator?.map((item: any) => (
+                    <div key={item?.id} className="flex items-center gap-2">
+                      <Frame urlImage={item?.urlImage || ''} size="small" alt={item?.name ?? 'Foto do educador do curso'} />
                       <div>
-                        <h3 className="font-bold text-text-color">{item.name}</h3>
-                        <p  className="italic text-sm text-text-color">{item.about}</p>
+                        <h3 className="font-bold text-text-color">{item?.name}</h3>
+                        <p  className="italic text-sm text-text-color">{item?.about}</p>
                       </div>
                     </div>
                   ))

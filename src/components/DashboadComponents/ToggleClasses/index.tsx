@@ -2,19 +2,20 @@ import React from 'react'
 
 import { MdVideoLibrary } from 'react-icons/md'
 import { BsChevronDown } from 'react-icons/bs'
-import { Topics, useTraining } from '../../../context/TrainingsContext'
+import { Classes, Topics, useTraining } from '../../../context/TrainingsContext'
 import ClassLabel from '../ClassLabel'
 
 
 type ToggleClassesProps = {
   topic: Topics; 
+  classesVideos: any[]
 }
 
-const ToggleClasses = ({ topic }: ToggleClassesProps) => {
+const ToggleClasses = ({ topic, classesVideos }: ToggleClassesProps) => {
   const {showTopic, handleShowTopics} = useTraining()
   
   return (
-    <div className="rounded-lg bg-secondary100">
+    <div className="rounded-lg bg-secondary100  mb-3">
       <button
         onClick={() => handleShowTopics(topic.id)} 
         className="w-full px-5 py-3 flex justify-between items-center">
@@ -34,9 +35,9 @@ const ToggleClasses = ({ topic }: ToggleClassesProps) => {
         </div>
       </button>
       <div 
-        className={`${showTopic === topic.id ? 'block' : 'hidden'} transition-all duration-200 px-5  pt-3 pb-5  bg-secondary100 grid gap-5 rounded-b-lg`}>
+        className={`${showTopic === topic.id ? 'block' : 'hidden'} transition-all duration-200 px-5 pt-3 pb-5  bg-secondary100 grid gap-5 rounded-b-lg`}>
         {
-          topic.classes.map((classSingle) => (
+          classesVideos.map((classSingle) => (
             <ClassLabel 
               key={classSingle.id} 
               data={classSingle}

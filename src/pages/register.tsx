@@ -3,9 +3,11 @@ import Link from 'next/link'
 import React, { FormEvent, useState } from 'react'
 import Fade from 'react-reveal/Fade'
 import { MdEmail, MdPerson, MdLockOutline } from 'react-icons/md' 
-import { api } from '../src/services/api'
 import { useRouter } from 'next/router'
-import { Alert } from '../src/components/Alert'
+import { Alert } from '../components/Alert'
+import { GetServerSideProps } from 'next'
+import { parseCookies } from 'nookies'
+import { api } from '../services/api'
 
 const Register = () => {
   const [name, setName] = useState('')
@@ -17,7 +19,7 @@ const Register = () => {
   const [loading, setLoading] = useState(false)
   const navigation = useRouter()
 
-  const handleSignUp = async (e: FormEvent) => {
+  async function handleRegister(e: FormEvent) {
     e.preventDefault()
     if(!name || !email || !password || !confirmPassword) {
       setShow(true)
@@ -45,10 +47,7 @@ const Register = () => {
         password, 
         confirm_password:confirmPassword
       })
-      if(data.type === 'success') {
-        setShow(true)
-        setLoading(false);
-        setMessage('Seu cadastro foi realizado com sucesso')
+      if(data.message) {
         navigation.push('/confirm-account')
       }
     } catch (error) {
@@ -56,11 +55,6 @@ const Register = () => {
       setLoading(false);
       setMessage('Houve um erro ao realizar seu cadastro, tente novamente!')
     }
-    
-  }
-
-  const toggleAlert = (show: boolean) => {
-    setShow(!show)
   }
 
   return (
@@ -69,9 +63,6 @@ const Register = () => {
         <title>Nome da plataforma | Login</title>
       </Head>
       <section className="h-screen bg-secondary100  flex items-center">
-      {
-        show && <Alert type="warning" message={message} toggleAlert={toggleAlert} show={show}  />
-      }
         <Fade left>
           <div className="w-1/2 text-center ">
             <div className="p-10 w-4/5 mx-auto border-2 border-primary rounded-lg">
@@ -80,7 +71,7 @@ const Register = () => {
                 <p className="text-md text-highlight mb-7">E venha fazer parte da nossa comunidade!</p>
               </div>
             <div className="flex items-center justify-center">
-              <form onSubmit={e => handleSignUp(e)} className="w-4/5">
+              <form onSubmit={(e) => handleRegister(e)} className="w-4/5">
                 <div className="w-full h-14 bg-secondary80 rounded-lg px-5 text-[#fff] mb-3 flex items-center gap-4">
                   <span className=" text-xl text-primary">
                     <MdPerson />
@@ -163,6 +154,23 @@ const Register = () => {
       </section>
     </>
   )
+}
+
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const {access_token} = parseCookies(ctx)
+
+  if (access_token) {
+    return {
+      redirect: {
+        destination: '/dashboard',
+        permanent: true,
+      }
+    }
+  }
+
+  return {
+    props: {}
+  }
 }
 
 export default Register

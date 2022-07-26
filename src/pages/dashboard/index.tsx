@@ -2,22 +2,24 @@ import { GetServerSideProps } from 'next';
 import Link from 'next/link';
 import { parseCookies } from 'nookies';
 import React, { ReactElement, useState } from 'react'
-import MyTraining from '../../src/components/DashboadComponents/MyTraining';
-import { getAPIClient } from '../../src/services/axios';
+import MyTraining from '../../components/DashboadComponents/MyTraining';
 import { CgChevronDoubleRightO } from 'react-icons/cg'
-import { Frame } from '../../src/components/Frame';
-import { LayoutDashboard } from '../../src/components/LayoutDashboard';
-import { useTraining } from '../../src/context/TrainingsContext';
-import { AboutTraining } from '../../src/components/DashboadComponents/AboutTraining';
-import { myData } from '../../src/utils/myData';
+import { Frame } from '../../components/Frame';
+import { LayoutDashboard } from '../../components/LayoutDashboard';
+import { Training, useTraining } from '../../context/TrainingsContext';
+import { AboutTraining } from '../../components/DashboadComponents/AboutTraining';
+import { useAuth } from '../../context/AuthContext';
+import { getAllTrainings } from '../../lib/trainings/get-all';
 
+type DashboardProps = {
+  trainings: Training[]
+}
 
-const Dashboard = () => {
-  const { lastTrainingSeen } = myData
-  const { trainings } = useTraining()
+const Dashboard = ({ trainings }: DashboardProps) => { 
+  const { user } = useAuth()
   const [selectedTraining, setSelectedTraining] = useState<any>(null)
 
-  function handleSelectTraining(idTraining: number) {
+  function handleSelectTraining(idTraining: string) {
     const training = trainings?.find(item => item.id === idTraining)
     setSelectedTraining(training)
   }
@@ -27,21 +29,19 @@ const Dashboard = () => {
       <div className="container mx-auto flex flex-col lg:grid gap-5">
         <div className="flex flex-col lg:flex-row items-center gap-5 w-full lg:h-56">
           <div className="w-full lg:w-1/2 h-full rounded-lg py-10 px-5 bg-secondary90">
-            <h2 className="text-3xl text-text-color font-bold">Olá, Kauã</h2>
+            <h2 className="text-3xl text-text-color font-bold">Olá, {user?.name}</h2>
             <p className="mt-5 text-md text-secondary40">Seja bem-vindo de volta à nossa plataforma, pronto para voltar ao estudos?</p>
           </div>
           <div className="w-full lg:w-1/2 h-full rounded-lg py-5 px-7 bg-secondary90 flex flex-col md:flex-row justify-between items-start md:items-center md:gap-0 gap-5">
             {
               trainings?.map(training => (
-                <MyTraining key={training.id} handleSelectTraining={handleSelectTraining} data={training} plan="Básico" />
+                <MyTraining key={training.id} handleSelectTraining={handleSelectTraining} data={training} />
               ))
             }
           </div>
         </div>
-        {
-          lastTrainingSeen && (
-            <Link href={`/training/id-treinamento?last`}>
-              <a className=" p-7 rounded-lg bg-secondary90 flex flex-col md:flex-row items-center justify-between">
+            {/* <Link href={`/training/id-treinamento?last`}>
+              <a className=" hidden p-7 rounded-lg bg-secondary90 flex flex-col md:flex-row items-center justify-between">
                 <div className="flex flex-col md:flex-row items-start gap-7">
                   <Frame 
                     urlImage="https://cursos.dankicode.com/app/Views/public/images/uploads/cursos/5fe391f1497c8.jpg"
@@ -61,9 +61,8 @@ const Dashboard = () => {
                   </div>
                 </div>
               </a>
-            </Link>
-          )
-        }
+            </Link> */}
+
         <div className="grid gap-5 grid-col-1">
           {
             selectedTraining &&  (
@@ -78,25 +77,30 @@ const Dashboard = () => {
   )
 }
 
-// export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  // const apiClient = getAPIClient(ctx);
-  // const { ['access_token']: access_token } = parseCookies(ctx)
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const { ['access_token']: access_token } = parseCookies(ctx)
 
-  // if (!access_token) {
-  //   return {
-  //     redirect: {
-  //       destination: '/',
-  //       permanent: false,
-  //     }
-  //   }
-  // }
+  if (!access_token) {
+    return {
+      redirect: {
+        destination: '/',
+        permanent: false,
+      }
+    }
+  }
 
-  // await apiClient.get('/users')
+  const trainings = await getAllTrainings()
 
-//   return {
-//     props: {}
-//   }
-// }
+  return {
+    props: {
+      trainings: trainings.map((training) => ({
+          ...training,
+          created_at: training.updated_at.toISOString(),
+          updated_at: training.updated_at.toISOString(),
+      })).reverse(),
+    }
+  }
+}
 
 Dashboard.getLayout = function getLayout(page: ReactElement) {
   return (

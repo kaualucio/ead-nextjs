@@ -3,7 +3,9 @@ import Link from 'next/link'
 import React, { FormEvent, useState } from 'react'
 import Fade from 'react-reveal/Fade'
 import { MdEmail, MdLockOutline } from 'react-icons/md' 
-import { useAuth } from '../src/context/AuthContext'
+import { useAuth } from '../context/AuthContext'
+import { GetServerSideProps } from 'next'
+import { parseCookies } from 'nookies'
 const Login = () => {
   const { SignIn } = useAuth()
   const [email, setEmail] = useState('')
@@ -13,7 +15,6 @@ const Login = () => {
     e.preventDefault();
     SignIn({email, password});
   }
-
   return (
     <>
       <Head>
@@ -21,7 +22,7 @@ const Login = () => {
       </Head>
       <section className="h-screen bg-secondary100 flex items-center">
         <Fade left>
-            <div className="w-1/2 text-center ">
+            <div className="w-full lg:w-1/2 text-center ">
               <div className="p-10 w-4/5 mx-auto border-2 border-primary rounded-lg">
                 <div className="text-white">
                   <h1 className="text-4xl font-bold mb-10">Logue-se na <br/> plataforma</h1>
@@ -76,7 +77,7 @@ const Login = () => {
               </div>
               </div>
             </div>
-            <div className="h-screen  w-1/2 flex items-center justify-center rounded-r-[2.5rem]">
+            <div className="hidden lg:block h-screen w-1/2 flex items-center justify-center rounded-r-[2.5rem]">
               
             </div>
         </Fade>     
@@ -84,5 +85,23 @@ const Login = () => {
     </>
   )
 }
+
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const {access_token} = parseCookies(ctx)
+
+  if (access_token) {
+    return {
+      redirect: {
+        destination: '/dashboard',
+        permanent: true,
+      }
+    }
+  }
+
+  return {
+    props: {}
+  }
+}
+
 
 export default Login

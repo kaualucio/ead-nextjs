@@ -1,16 +1,16 @@
 import React, { useState } from 'react'
-import Image from 'next/image'
 import Link from 'next/link'
 import {IoMdNotifications} from 'react-icons/io'
 import {MdHelpCenter} from 'react-icons/md'
 
 import Dropdown from '../Dropdown'
 import { Frame } from '../../Frame'
+import { useAuth } from '../../../context/AuthContext'
 
 
 const HeaderDashboard = () => {
   const [showDropdown, setShowDropdown] = useState(false)
-
+  const { user } = useAuth()
   return (
     <div className="w-full bg-secondary90 h-20 ">
       <div className="container mx-auto px-3 md:px-5 h-full flex items-center justify-between ">
@@ -35,9 +35,9 @@ const HeaderDashboard = () => {
               onClick={() => setShowDropdown(!showDropdown)}  
             >
               <Frame 
-                urlImage="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8bWFufGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60"
+                urlImage={'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png'}
                 size="small"
-                alt="Foto de perfil"
+                alt={'dwde'}
               />
             </button>
               <Dropdown showDropdown={showDropdown} />

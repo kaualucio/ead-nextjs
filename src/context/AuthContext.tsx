@@ -3,25 +3,11 @@ import { parseCookies, setCookie } from "nookies";
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import jwt_decode from "jwt-decode";
 
-
 import { api } from "../services/api";
-
-enum Role {
-  USER = 'USER',
-  STUDENT = 'STUDENT',
-  TEACHER = 'TEACHER',
-  ADMIN = 'ADMIN',
-}
+import { MyData } from "../utils/myData";
 
 type AuthContextProviderProps = {
   children: ReactNode
-}
-
-enum Training {
-  BASIC = 'BASIC',
-  TREINAMENTO1 = 'TREINAMENTO1',
-  TREINAMENTO2 = 'TREINAMENTO2',
-  TREINAMENTO3 = 'TREINAMENTO3',
 }
 
 type SignInProps = {
@@ -29,16 +15,20 @@ type SignInProps = {
   password: string,
 }
 
+
 type DecodedToken = {
   sub: string
 }
 
+
 type User = {
-  id: string,
-  name: string,
-  email: string,
-  role: Role[],
-  hasTrainingAccess: Training[]
+  id: string;
+  name: string;
+  email: string;
+  urlImage: string;
+  hasTrainingAccess: string;
+  lastTrainingSeen: any;
+
 }
 
 type AuthContextProps = {
@@ -50,7 +40,7 @@ type AuthContextProps = {
 const AuthContext = createContext({} as AuthContextProps)
 
 const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(false);
   const navigation = useRouter();
 
@@ -58,8 +48,7 @@ const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
     const { 'access_token': access_token } = parseCookies()
     if (access_token) {
       const token: DecodedToken = jwt_decode(access_token)
-      console.log(token)
-      api.post('/auth/me', {
+      api.post('/user/me', {
         userId: token.sub
       }).then(({data}) => {
         setUser(data)
@@ -79,12 +68,13 @@ const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
         email,
         password
       })
-
-      setCookie(null, 'access_token', data.access_token)
-      setCookie(null, 'refresh_token', data.refresh_token)
+      console.log(data)
+      setUser(data.user)
+      setCookie(null, 'access_token', data.access_token, {
+        maxAge: 60 * 5
+      })
 
       navigation.push('/dashboard')
-      setLoading(false)
     } catch (error) {
       console.log(error)
       setLoading(false)

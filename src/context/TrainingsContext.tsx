@@ -1,7 +1,10 @@
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
+import { getAllTrainings } from "../lib/trainings/get-all";
+import { api } from "../services/api";
 import { LastTrainingSeen, myData } from "../utils/myData";
 import { topics } from "../utils/topics";
 import { trainingsAvailable } from "../utils/trainings";
+import { useAuth } from "./AuthContext";
 
 type TrainingsContextProviderProps = {
   children: ReactNode
@@ -18,7 +21,7 @@ export type Downloads = {
 }
 
 export type Educator = {
-  id: number,
+  id: string,
   name: string,
   urlImage:string,
   about: string,
@@ -30,8 +33,9 @@ type Resources = {
 }
 
 export type Classes = {
-  id: number,
-  idTraining: number,
+  id: string,
+  trainingId: string,
+  topicId: string,
   title: string,
   slug: string,
   urlVideo: string,
@@ -41,23 +45,23 @@ export type Classes = {
 }
 
 export type Topics = {
-  id: number,
-  idTraining: number,
+  id: string,
+  trainingId: number,
   educatorId: number,
   title: string,
   slug: string,
   description: string,
-  totalVideos: number
-  totalTime: number
+  totalVideos: number,
+  totalTime: number,
   resources: {
-    downloads: number
-    links: number
+    downloads: number,
+    links: number,
   },
   classes: Classes[]
 }
 
-type Training = {
-  id: number,
+export type Training = {
+  id: string,
   title: string,
   slug: string,
   thumbnail: string,
@@ -65,39 +69,33 @@ type Training = {
   totalTime: number,
   totalResources: number,
   certified: boolean,
-  educator: Educator[]
+  educator: Educator[];
 }
 
 type Context = {
-  lastTrainingSeen: null | LastTrainingSeen
-  trainings: Training[] | null;
+  showTopic: string | null;
+  urlVideo: string,
   currentTopicInfo: Topics | null;
-  showTopic: number | null,
-  currentVideoOnScreen: Classes | null
-  handleShowTopics: (idTopic: number) => void,
-  handleCurrentVideo: (currentClass: Classes) => void,
-  handleNextVideo: (topicData: any) => void
-  markVideoAsCompleted: (videoId: number) => void
+  currentVideoOnScreen: Classes | null;
+  handleShowTopics: (topicId: string) => void;
+  handleCurrentVideo: (currentClass: Classes) => void;
+  handleChangeVideo: (topicData: any) => void;
+  markVideoAsCompleted: (videoId: string) => void;
 }
 
 const TrainingsContext = createContext({} as Context)
 
 function TrainingsContextProvider({ children }: TrainingsContextProviderProps) {
-  const [lastTrainingSeen, setLastTrainingSeen] = useState<any>(myData.lastTrainingSeen)
-  const [trainings, setTrainings] = useState<Training[] | null>(null)
+  const { user } = useAuth()
+  const [urlVideo, setUrlVideo] = useState('')
   const [topicsCovered, setTopicsCovered] = useState<Topics[] | null>(null)
-  const [showTopic, setShowTopic] = useState<number | null>(null)
+  const [showTopic, setShowTopic] = useState<string | null>(null)
   const [currentVideoOnScreen, setCurrentVideoOnScreen] = useState<Classes | null>(null)
   const [currentTopicInfo, setCurrentTopicInfo] = useState<Topics | null>(null)
   
-  useEffect(() => {
-    setTrainings(trainingsAvailable)
-    setTopicsCovered(topics)
-  }, [])
-
-  function handleShowTopics(idTopic: number) {
-    setShowTopic(idTopic)
-    const topicInfo = topicsCovered?.find(topic => topic.id === idTopic)
+  function handleShowTopics(topicId: string) {
+    setShowTopic(topicId)
+    const topicInfo = topicsCovered?.find(topic => topic.id === topicId)
 
     setCurrentTopicInfo(!topicInfo ? null : topicInfo)
   }
@@ -106,27 +104,23 @@ function TrainingsContextProvider({ children }: TrainingsContextProviderProps) {
     setCurrentVideoOnScreen(currentClass)
   }
 
-  function handleNextVideo(topicData: any) {
-    setLastTrainingSeen({
-      classSlug: topicData.classSlug,
-      topicSlug: topicData.topicSlug,
-      trainingSlug: topicData.trainingSlug,
-    })
+  async function handleChangeVideo(nextClass: Classes) {
+    handleCurrentVideo(nextClass)
+    setUrlVideo(nextClass.urlVideo)
   }
 
-  function markVideoAsCompleted(videoId: number) {
-    
+  async function markVideoAsCompleted(videoId: string) {
+    await api.post(`/class/update/${videoId}`)
   }
   return (
     <TrainingsContext.Provider value={{
-      lastTrainingSeen,
-      trainings,
+      showTopic,
+      urlVideo,
       currentTopicInfo,
       currentVideoOnScreen,
-      showTopic,
       handleShowTopics,
       handleCurrentVideo,
-      handleNextVideo,
+      handleChangeVideo,
       markVideoAsCompleted
     }}>
       {children}

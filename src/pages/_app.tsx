@@ -2,10 +2,9 @@ import type { ReactElement, ReactNode } from 'react'
 import type { NextPage } from 'next'
 import type { AppProps } from 'next/app'
 
-import '../styles/globals.css'
-import { Layout } from '../src/components/Layout'
-import { AuthContextProvider } from '../src/context/AuthContext'
-import { TrainingsContextProvider } from '../src/context/TrainingsContext'
+import '../../styles/globals.css'
+import { AuthContextProvider } from '../context/AuthContext'
+import { TrainingsContextProvider } from '../context/TrainingsContext'
 
 export type NextPageWithLayout = NextPage & {
   getLayout?: (page: ReactElement) => ReactNode

@@ -7,18 +7,36 @@ type ClasseLabelProps = {
 }
 
 const ClassLabel = ({ data, topic}: ClasseLabelProps) => {
-  const { currentVideoOnScreen, handleNextVideo, trainings } = useTraining()
-  console.log(currentVideoOnScreen.watched)
+  const { currentVideoOnScreen, handleChangeVideo } = useTraining()
+  let borderBulletDetail = ''
+  let bulletDetail = ''
+  let textTitle = ''
+  if(currentVideoOnScreen && currentVideoOnScreen.id === data.id) {
+    textTitle = 'text-text-color'
+    if(data.watched) {
+      borderBulletDetail = 'border-primary'
+      bulletDetail = 'bg-primary'
+    }else {
+      borderBulletDetail = 'border-primary'
+      bulletDetail = 'bg-white'
+    }
+  }else if(currentVideoOnScreen && currentVideoOnScreen.id !== data.id) {
+    textTitle = 'text-secondary40'
+    if(data.watched) {
+      borderBulletDetail = 'border-primary'
+      bulletDetail = 'bg-primary'
+    }else {
+      borderBulletDetail = 'border-secondary60'
+      bulletDetail = 'bg-secondary60'
+    }
+  }
+
   return (
-    <button onClick={() => handleNextVideo({
-      classSlug: data.slug,
-      topicSlug: topic.slug,
-      trainingSlug: trainings?.find(training => training.id === topic.idTraining)?.id
-    })} className="flex items-center gap-3 ">
-      <div className={`p-5 rounded-full border-2  ${currentVideoOnScreen?.id === data.id ? 'border-primary' : 'border-secondary60'} p-1`}>
-        <div className={`w-2 h-2 rounded-full ${data.watched && 'bg-primary'}  ${currentVideoOnScreen?.id === data.id ? 'bg-white' : 'bg-secondary60'}`} />
+    <button onClick={() => handleChangeVideo(data)} className="flex items-center gap-3 ">
+      <div className={`p-5 rounded-full border-2 ${borderBulletDetail}  p-1`}>
+        <div className={`w-2 h-2 rounded-full ${bulletDetail} `} />
       </div>
-      <p className={`text-sm hover:text-text-color ${currentVideoOnScreen?.id === data.id ? 'text-text-color' : 'text-secondary40'}`}>{data.title}</p>
+      <p className={`text-sm hover:text-text-color ${textTitle}`}>{data.title}</p>
     </button>
   )
 }
