@@ -1,8 +1,8 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { sign } from 'jsonwebtoken'
-import { PrismaClient } from '@prisma/client'
+import { client } from "../../../prisma/client";
 
-const prisma = new PrismaClient()
+
 
 export default async function handle(req: NextApiRequest, res: NextApiResponse) {
   const { email, password } = req.body
@@ -13,7 +13,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
     })
   }
 
-  const userExists = await prisma.user.findUnique({
+  const userExists = await client.user.findUnique({
     where: {
       email
     }

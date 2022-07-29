@@ -8,7 +8,7 @@ import ClassLabel from '../ClassLabel'
 
 type ToggleClassesProps = {
   topic: Topics; 
-  classesVideos: any[]
+  classesVideos: any[],
 }
 
 const ToggleClasses = ({ topic, classesVideos }: ToggleClassesProps) => {
@@ -41,7 +41,6 @@ const ToggleClasses = ({ topic, classesVideos }: ToggleClassesProps) => {
             <ClassLabel 
               key={classSingle.id} 
               data={classSingle}
-              topic={topic}  
             />
           ))
         }

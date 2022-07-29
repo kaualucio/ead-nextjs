@@ -1,5 +1,5 @@
-import { NextApiRequest, NextApiResponse } from "next";
-import { getTopicsByTrainingSlug } from "../../../../lib/topics/get-topics-by-training-slug";
+import { NextApiRequest, NextApiResponse } from "next"
+import { getTopicsByTrainingId } from "../../../../lib/topics/get-topics-by-training-slug";
 import { getTrainingBySlug } from "../../../../lib/trainings/get-by-slug";
 
 export default async function handle(req: NextApiRequest, res: NextApiResponse) {
@@ -13,7 +13,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
     })
   }
 
-  const topics = await getTopicsByTrainingSlug(training.id)
+  const topics = await getTopicsByTrainingId(training.id)
 
   return res.status(200).json(topics)
 }

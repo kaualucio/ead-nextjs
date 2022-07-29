@@ -3,13 +3,11 @@ import Link from 'next/link';
 import { parseCookies } from 'nookies';
 import React, { ReactElement, useState } from 'react'
 import MyTraining from '../../components/DashboadComponents/MyTraining';
-import { CgChevronDoubleRightO } from 'react-icons/cg'
-import { Frame } from '../../components/Frame';
 import { LayoutDashboard } from '../../components/LayoutDashboard';
-import { Training, useTraining } from '../../context/TrainingsContext';
 import { AboutTraining } from '../../components/DashboadComponents/AboutTraining';
 import { useAuth } from '../../context/AuthContext';
 import { getAllTrainings } from '../../lib/trainings/get-all';
+import { Training } from '../../context/TrainingsContext';
 
 type DashboardProps = {
   trainings: Training[]
@@ -40,6 +38,7 @@ const Dashboard = ({ trainings }: DashboardProps) => {
             }
           </div>
         </div>
+        {/* IMPLEMENTAR SEÇÃO QUE LEVA PARA O ÚLITMA VIDEO AULA ASSISTIDA */}
             {/* <Link href={`/training/id-treinamento?last`}>
               <a className=" hidden p-7 rounded-lg bg-secondary90 flex flex-col md:flex-row items-center justify-between">
                 <div className="flex flex-col md:flex-row items-start gap-7">
@@ -89,15 +88,11 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     }
   }
 
-  const trainings = await getAllTrainings()
+  let trainings = await getAllTrainings()
 
   return {
     props: {
-      trainings: trainings.map((training) => ({
-          ...training,
-          created_at: training.updated_at.toISOString(),
-          updated_at: training.updated_at.toISOString(),
-      })).reverse(),
+      trainings: JSON.parse(JSON.stringify(trainings.reverse())),
     }
   }
 }

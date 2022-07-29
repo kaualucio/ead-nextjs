@@ -23,7 +23,7 @@ const MyTraining = ({ data, handleSelectTraining}: MyTrainingProps) => {
       />
       <div className="text-center">
         <h2 className="font-bold text-text-color text-md mb-2">{data.title}</h2>
-        <p className=" text-text-color text-sm">{user.hasTrainingAccess}</p>
+        <p className=" text-text-color text-sm">{user?.hasTrainingAccess}</p>
       </div>
     </button>
   )

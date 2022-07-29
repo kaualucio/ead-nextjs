@@ -1,24 +1,37 @@
 import Image from 'next/image'
+import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
 import { HiOutlineFolderDownload } from 'react-icons/hi'
 import { BiMoviePlay, BiTrophy } from 'react-icons/bi'
 
-import IconLabel from '../IconLabel'
-import { myData } from '../../../utils/myData'
-import { useRouter } from 'next/router'
-import { topics } from '../../../utils/topics'
-import Link from 'next/link'
+import {IconLabel} from '../IconLabel'
 import { Frame } from '../../Frame'
 import { api } from '../../../services/api'
+import { useAuth } from '../../../context/AuthContext'
 
 const AboutTraining = ({ training }: any) => {
+  let { user } = useAuth()
   const [educator, setEducator] = useState<any[]>(null)
+  const [percentageProgress, setPercentageProgress] = useState(0)
+  
+  
   useEffect(() => {
     api.get(`/educator/training/${training.id}`).then(({data}) => {
       setEducator(data)
     })
-  }, [training])
+    let qtyVideosWatchedByUser = 0
+    training.VideoWatched.map(video => {
+      training.classes.map(classSingle => {
+        
+        if(video.trainingId === training.id && video.userId === user.id && video.videoId === classSingle.id) {
+          qtyVideosWatchedByUser++
+        }
+      })
 
+    })
+    setPercentageProgress(qtyVideosWatchedByUser / training.classes.length * 100)
+  }, [percentageProgress, training, user.id])
+  console.log(percentageProgress)
   return (
     <div className="flex flex-col gap-7 lg:gap-0 lg:flex-row h-full">
       <div className="w-full lg:w-1/2 items-start">
@@ -43,14 +56,14 @@ const AboutTraining = ({ training }: any) => {
             <div className="mt-5 grid grid-cols-3 gap-2">
               <IconLabel label={`${training.totalTime} horas de aulas gravadas`} icon={BiMoviePlay} />
               <IconLabel label={`${training.totalTime} recursos para download`} icon={HiOutlineFolderDownload} />
-              {
-                training.certified && <IconLabel label="Certificado de conclusão" icon={BiTrophy} />
-              }
+              <IconLabel label="Certificado de conclusão" icon={BiTrophy} />
             </div>
           </div>
           <div className="mt-10 lg:mt-0">
-            <h2 className="text-secondary50 font-bold text-sm mb-2">0% completo</h2>
-            <div className="w-full h-2 rounded-full bg-secondary40"></div>
+            <h2 className="text-secondary50 font-bold text-sm mb-2">{percentageProgress ? percentageProgress : 0}% completo</h2>
+            <div className="w-full h-2 rounded-full bg-secondary40 relative">
+              <div className={`absolute top-0 left-0 inline-block h-full rounded-full w-[${percentageProgress}%] bg-primary`}/>
+            </div>
           </div>
         </div>
         
@@ -59,7 +72,7 @@ const AboutTraining = ({ training }: any) => {
         <div className="h-full flex flex-col justify-between">
           <div>
             <h2 className="text-text-color text-xl font-bold mb-5">Professores</h2>
-            <div className="w-full p-3 rounded-lg ">  
+            <div className="w-full p-3 rounded-lg grid gap-5">  
                 {
                   educator?.map((item: any) => (
                     <div key={item?.id} className="flex items-center gap-2">

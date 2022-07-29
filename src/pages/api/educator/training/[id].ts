@@ -1,12 +1,10 @@
-import { PrismaClient } from "@prisma/client";
 import { NextApiRequest, NextApiResponse } from "next";
-
-const prisma = new PrismaClient()
+import { client } from "../../../../prisma/client";
 
 export default async function handle(req: NextApiRequest, res: NextApiResponse) {
 
   const id = req.query.id as string 
-  const educators = await prisma.educator.findMany({
+  const educators = await client.educator.findMany({
     where: {
       trainingId: id
     }

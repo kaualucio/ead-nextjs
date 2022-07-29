@@ -6,24 +6,42 @@ import { MdEmail, MdLockOutline } from 'react-icons/md'
 import { useAuth } from '../context/AuthContext'
 import { GetServerSideProps } from 'next'
 import { parseCookies } from 'nookies'
+import { Alert } from '../components/Alert'
 const Login = () => {
-  const { SignIn } = useAuth()
+  const { SignIn, loading } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
+  const [message, setMessage] = useState('')
+  const [show, setShow] = useState(false)
+  const [typeMessage, setTypeMessage] = useState('')
+
   const handleSignIn = async (e: FormEvent) => {
     e.preventDefault();
-    SignIn({email, password});
+    const response = await SignIn({email, password});
+    if(response) {
+      setTypeMessage(response.type)
+      setMessage(response.message)
+      setShow(true)
+    }
   }
+
+  function toggleAlert(show: boolean) {
+    setShow(!show)
+  }
+
   return (
     <>
       <Head>
         <title>Nome da plataforma | Login</title>
       </Head>
-      <section className="h-screen bg-secondary100 flex items-center">
+      <section className="h-screen bg-secondary100 flex items-center justify-center">
+        {
+          show && <Alert type={typeMessage} message={message} toggleAlert={toggleAlert} show={show}  />
+        }
         <Fade left>
-            <div className="w-full lg:w-1/2 text-center ">
-              <div className="p-10 w-4/5 mx-auto border-2 border-primary rounded-lg">
+            <div className="text-center ">
+              <div className="p-10 mx-auto border-2 border-primary rounded-lg">
                 <div className="text-white">
                   <h1 className="text-4xl font-bold mb-10">Logue-se na <br/> plataforma</h1>
                 </div>
@@ -62,12 +80,15 @@ const Login = () => {
                     </Link>
                   </div>
                   <div className="mt-4">
-                    <button type="submit" className=" w-full h-12 rounded-md bg-primary text-white font-bold uppercase hover:opacity-80 tracking-widest">
+                    <button
+                      disabled={loading} 
+                      type="submit" 
+                      className="disabled:opacity-70 w-full h-12 rounded-md bg-primary text-white font-bold uppercase hover:opacity-80 tracking-widest">
                       Login
                     </button>
                     <div className="w-9/12 h-px bg-secondary30 mx-auto my-3"></div>
                     <p className="text-sm text-white font-bold">
-                      Aind não possui uma conta? 
+                      Ainda não possui uma conta? 
                       <Link href="/register">
                         <a className="text-primary"> Registrar-se</a>  
                       </Link> 
@@ -76,9 +97,6 @@ const Login = () => {
                 </form>
               </div>
               </div>
-            </div>
-            <div className="hidden lg:block h-screen w-1/2 flex items-center justify-center rounded-r-[2.5rem]">
-              
             </div>
         </Fade>     
       </section>       

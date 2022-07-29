@@ -1,9 +1,6 @@
+import { client } from './../../../prisma/client';
 import { NextApiResponse, NextApiRequest } from 'next';
 import { v4 as uuid } from 'uuid'
-import { PrismaClient } from '@prisma/client'
-
-const prisma = new PrismaClient()
-
 
 export default async function handle(req: NextApiRequest, res: NextApiResponse) {
 
@@ -21,7 +18,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
     })
   }
 
-  await prisma.user.create({
+  await client.user.create({
     data: {
       id: uuid(),
       name, 
@@ -29,7 +26,6 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
       password,
       urlImage: '',
       hasTrainingAccess: 'BÁSICO',
-      lastTrainingSeen: null,
     }
   })
 

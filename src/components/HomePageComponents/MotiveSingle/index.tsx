@@ -16,4 +16,4 @@ const MotiveSingle = ({ title, legend }: MotiveSingleProps) => {
   )
 }
 
-export default MotiveSingle
+export {MotiveSingle}

@@ -14,27 +14,33 @@ const Register = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+  const [loading, setLoading] = useState(false)
+  
+  const navigation = useRouter()
+  
   const [message, setMessage] = useState('')
   const [show, setShow] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const navigation = useRouter()
+  const [typeMessage, setTypeMessage] = useState('')
 
   async function handleRegister(e: FormEvent) {
     e.preventDefault()
     if(!name || !email || !password || !confirmPassword) {
       setShow(true)
+      setTypeMessage('error')
       setMessage('Campos vazios não são permitidos')
       return;
     }
 
     if(password !== confirmPassword) {
       setShow(true)
+      setTypeMessage('error')
       setMessage('As senhas precisam ser iguais!')
       return;
     }
 
     if(password.length < 8) {
       setShow(true)
+      setTypeMessage('error')
       setMessage('Sua senha precisa de no mínimo 8 caracteres')
       return;
     }
@@ -48,13 +54,18 @@ const Register = () => {
         confirm_password:confirmPassword
       })
       if(data.message) {
-        navigation.push('/confirm-account')
+        navigation.push('/login')
       }
     } catch (error) {
       setShow(true)
       setLoading(false);
+      setTypeMessage('error')
       setMessage('Houve um erro ao realizar seu cadastro, tente novamente!')
     }
+  }
+
+  function toggleAlert(show: boolean) {
+    setShow(!show)
   }
 
   return (
@@ -62,10 +73,13 @@ const Register = () => {
       <Head>
         <title>Nome da plataforma | Login</title>
       </Head>
-      <section className="h-screen bg-secondary100  flex items-center">
+      <section className="h-screen bg-secondary100 flex items-center justify-center">
+        {
+          show && <Alert type={typeMessage} message={message} toggleAlert={toggleAlert} show={show}  />
+        }
         <Fade left>
-          <div className="w-1/2 text-center ">
-            <div className="p-10 w-4/5 mx-auto border-2 border-primary rounded-lg">
+          <div className="text-center">
+            <div className="p-10 mx-auto border-2 border-primary rounded-lg">
               <div className="text-white">
                 <h1 className="text-4xl font-bold mb-3">Faça seu cadastro na <br/> plataforma</h1>
                 <p className="text-md text-highlight mb-7">E venha fazer parte da nossa comunidade!</p>
@@ -146,9 +160,6 @@ const Register = () => {
               </form>
             </div>
             </div>
-          </div>
-          <div className="h-screen  w-1/2 flex items-center justify-center rounded-r-[2.5rem]">
-            
           </div>
         </Fade>
       </section>

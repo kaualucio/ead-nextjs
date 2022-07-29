@@ -9,6 +9,9 @@ export async function getClassesVideosByTrainingId(trainingId: string) {
     },
     orderBy: {
       created_at: 'asc'
+    },
+    include: {
+      VideoWatched: true
     }
   });
   return classesVideos

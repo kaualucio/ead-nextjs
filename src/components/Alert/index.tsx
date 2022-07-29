@@ -11,7 +11,7 @@ type AlertProps = {
 }
 
 const Alert = ({ type, message, show, toggleAlert }: AlertProps) => {
-  let typeAlert;
+  let typeAlert: any;
   switch (type) {
     case 'success':
       typeAlert = {

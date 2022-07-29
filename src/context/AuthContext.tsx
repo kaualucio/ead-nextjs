@@ -1,10 +1,9 @@
 import { useRouter } from "next/router";
-import { parseCookies, setCookie } from "nookies";
+import { destroyCookie, parseCookies, setCookie } from "nookies";
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import jwt_decode from "jwt-decode";
 
 import { api } from "../services/api";
-import { MyData } from "../utils/myData";
 
 type AuthContextProviderProps = {
   children: ReactNode
@@ -34,7 +33,8 @@ type User = {
 type AuthContextProps = {
   user: User | null,
   loading: boolean,
-  SignIn: ({email, password}: SignInProps) => void
+  SignIn: ({email, password}: SignInProps) => void | any
+  handleLoggout: () => void
 }
 
 const AuthContext = createContext({} as AuthContextProps)
@@ -68,17 +68,30 @@ const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
         email,
         password
       })
-      console.log(data)
       setUser(data.user)
       setCookie(null, 'access_token', data.access_token, {
         maxAge: 60 * 5
       })
-
+      setLoading(false)
       navigation.push('/dashboard')
     } catch (error) {
       console.log(error)
       setLoading(false)
-      return;
+      return {
+        type: 'error',
+        message: error.response.data.message
+      }
+    }
+  }
+
+  async function handleLoggout() {
+    try {
+      destroyCookie(null, 'access_token');
+      navigation.push('/')
+    } catch (error) {
+      return {
+        message: 'Houve um erro ao sair, tente novamente.'
+      }
     }
   }
 
@@ -86,7 +99,8 @@ const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
     <AuthContext.Provider value={{
       user,
       SignIn,
-      loading
+      loading,
+      handleLoggout
     }}>
       { children }
     </AuthContext.Provider>

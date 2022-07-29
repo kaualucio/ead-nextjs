@@ -3,60 +3,64 @@ import { LayoutDashboard } from '../../components/LayoutDashboard'
 import ReactPlayer from 'react-player/youtube'
 import { Classes, Topics, useTraining } from '../../context/TrainingsContext'
 import ToggleClasses from '../../components/DashboadComponents/ToggleClasses'
-import { trainingsAvailable } from '../../utils/trainings'
 import { GetServerSideProps } from 'next'
-import { topics } from '../../utils/topics'
 import ButtonToggleClassResources from '../../components/ButtonToggleClassResources'
 import ClassResource from '../../components/ClassResource'
-import { parseCookies, setCookie } from 'nookies'
+import { parseCookies } from 'nookies'
 import { getTrainingBySlug } from '../../lib/trainings/get-by-slug'
 import { getTopicsByTrainingId } from '../../lib/topics/get-topics-by-training-slug'
-import { useAuth } from '../../context/AuthContext'
 import { getClassesVideosByTrainingId } from '../../lib/classesVideos/get-by-training-id'
+import { getWatchedVideosByUser } from '../../lib/classesVideos/get-watched-video-by-user'
+import jwt_decode from "jwt-decode";
+import { useAuth } from '../../context/AuthContext'
 
 type TrainingProps = {
   topics: Topics[],
-  classesVideos: Classes[]
+  classesVideos: Classes[],
 }
 
 const Training = ({ topics, classesVideos }: TrainingProps) => {
-  const { handleShowTopics, handleCurrentVideo, urlVideo, handleChangeVideo, currentVideoOnScreen, markVideoAsCompleted} = useTraining()
   const playerRef = useRef<ReactPlayer>(null);
+  const { user } = useAuth()
+  const { handleShowTopics, handleCurrentVideo, urlVideo, handleChangeVideo, currentVideoOnScreen, markVideoAsCompleted} = useTraining()
   const [isLoading, setIsLoading] = useState(true)
   const [videoCompleted, setVideoCompleted] = useState(false)
   const [currentResourceOnScreen, setCurrentResourceOnScreen] = useState<any>()
-  
+
   useEffect(() => {
     handleShowTopics(topics[0].id)
-    if(urlVideo === '') {
     setTimeout(() => {
-     
-        const currentVideoUser = classesVideos.filter((video) => video.watched !== true)[0]
-        console.log(currentVideoUser)
+      const currentVideoUser = classesVideos.filter((video) => {
+        if(video.VideoWatched.length > 0) {
+          const currentUserAlreaySawThisVideo = video.VideoWatched.find(videoWatched => videoWatched.userId === user.id)
+
+          if(!currentUserAlreaySawThisVideo) return video
+
+        }else {
+          return video
+        }
+      })[0]
+      console.log(currentVideoUser)
+      if(urlVideo === '') {
         handleCurrentVideo(currentVideoUser)
-        // setCurrentResourceOnScreen({
-        //   type: 'descrição',
-        //   resource: classesVideos[0]?.description
-        // })
         handleChangeVideo(currentVideoUser)
-      }, 1000)
-      setIsLoading(false)
-    }
+        setIsLoading(false)
+      }else {
+        setIsLoading(false)
+      }
+      setCurrentResourceOnScreen({
+        type: 'descrição',
+        resource: currentVideoUser.description
+      })
+    }, 1000)
+   
   }, [urlVideo])
 
-  // useEffect(() => {
-  //   if(videoCompleted) {
-  //     let indexLastTrainingSeen = classesVideos.findIndex(item => item.id === currentVideoOnScreen.id)
-  //     setCookie(null, 'lastTrainingSeen', JSON.stringify({
-  //       classId: classesVideos[indexLastTrainingSeen++].id,
-  //       topicId: classesVideos[indexLastTrainingSeen++].topicId,
-  //       trainingId: classesVideos[indexLastTrainingSeen++].trainingId,
-  //     }), {
-  //       maxAge: 1 * 60 * 60 * 24, // 1 dia
-  //     })
-  //     markVideoAsCompleted(currentVideoOnScreen.id)
-  //   }
-  // }, [videoCompleted])
+  useEffect(() => {
+    if(videoCompleted) {
+      markVideoAsCompleted(currentVideoOnScreen)
+    }
+  }, [videoCompleted])
 
   
 
@@ -83,7 +87,7 @@ const Training = ({ topics, classesVideos }: TrainingProps) => {
     }
   }
   
-  if(isLoading) return <h1>Carregando</h1>
+  if(isLoading) return <div className="flex items-center justify-center"> <h1 className="text-center text-4xl text-primary">Carregando...</h1> </div>
 
 
 
@@ -115,7 +119,7 @@ const Training = ({ topics, classesVideos }: TrainingProps) => {
           }
           </div>
         </div>
-        {/* <div className="my-7 h-80">
+        <div className="my-7 h-80">
           <h2 className="text-text-color font-bold text-3xl mb-7">{currentVideoOnScreen?.title}</h2>
           <div className="flex items-center gap-5 text-secondary50 mb-7 font-bold border-b border-secondary50">
             <ButtonToggleClassResources label="Descrição" type="descrição" currentResourceOnScreen={currentResourceOnScreen} handleChangeResource={handleChangeResource} />
@@ -123,7 +127,7 @@ const Training = ({ topics, classesVideos }: TrainingProps) => {
             <ButtonToggleClassResources label="Links" type="links" currentResourceOnScreen={currentResourceOnScreen} handleChangeResource={handleChangeResource} />
           </div>
           <ClassResource data={currentResourceOnScreen} />
-        </div> */}
+        </div>
       </div>
     </section>
   )
@@ -132,8 +136,9 @@ const Training = ({ topics, classesVideos }: TrainingProps) => {
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const slug = ctx.query.slug as string
   
-  const { ['access_token']: access_token } = parseCookies(ctx)
-
+  const { access_token } = parseCookies(ctx)
+  const token: any = jwt_decode(access_token)
+  
   if (!access_token) {
     return {
       redirect: {
@@ -153,21 +158,15 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
       }
     }
   }
-  let topicsCurrentTraining = await getTopicsByTrainingId(currentTraining.id)
+  let topicsCurrentTraining = await getTopicsByTrainingId(currentTraining.id) 
   let classesCurrentTraining = await getClassesVideosByTrainingId(currentTraining.id)
+  let videosWatchedByUser = await getWatchedVideosByUser(token.sub)
 
   return {
     props: {
-      topics: topicsCurrentTraining.map((topic) => ({
-        ...topic,
-        created_at: topic.updated_at.toISOString(),
-        updated_at: topic.updated_at.toISOString(),
-    })),
-      classesVideos: classesCurrentTraining.map((classeSingle) => ({
-        ...classeSingle,
-        created_at: classeSingle.updated_at.toISOString(),
-        updated_at: classeSingle.updated_at.toISOString(),
-    })),
+      topics: JSON.parse(JSON.stringify(topicsCurrentTraining)),
+      classesVideos: JSON.parse(JSON.stringify(classesCurrentTraining)),
+      videosWatchedByUser: JSON.parse(JSON.stringify(videosWatchedByUser)),
     }
   }
 }
@@ -181,35 +180,3 @@ Training.getLayout = function getLeyout(page: ReactElement) {
 }
 
 export default Training
-
-/*
-  if(lastTrainingSeen && JSON.parse(lastTrainingSeen).trainingId === topics[0].trainingId) {
-      
-      const currentTopicUser = topics.find((topic) => topic.id === JSON.parse(lastTrainingSeen).topicId)
-      currentTopicUser && handleShowTopics(currentTopicUser.id)
-
-      const currentVideoUser = classesVideos.find((classSingle) => classSingle.id === JSON.parse(lastTrainingSeen).classId)
-      currentVideoUser && handleCurrentVideo(currentVideoUser)
-      setCurrentResourceOnScreen({
-        type: 'descrição',
-        resource: currentVideoUser?.description
-      })
-      setTimeout(() => {
-        if(currentVideoUser) {
-          handleChangeVideo(currentVideoUser)
-        }
-        setIsLoading(false)
-      }, 1000)
-    }else {
-      handleShowTopics(topics[0].id)
-      handleCurrentVideo(classesVideos[0])
-      setCurrentResourceOnScreen({
-        type: 'descrição',
-        resource: classesVideos[0].description
-      })
-      setTimeout(() => {
-        handleChangeVideo(classesVideos[0])
-        setIsLoading(false)
-      }, 1000)
-    }
-*/

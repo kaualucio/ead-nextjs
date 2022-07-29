@@ -17,4 +17,4 @@ const IconLabel = ({ label, icon: Icon }: IconLabelProps) => {
   )
 }
 
-export default IconLabel
+export {IconLabel}

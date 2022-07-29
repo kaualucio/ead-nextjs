@@ -1,9 +1,5 @@
-import { createContext, ReactNode, useContext, useEffect, useState } from "react";
-import { getAllTrainings } from "../lib/trainings/get-all";
+import { createContext, ReactNode, useContext, useState } from "react";
 import { api } from "../services/api";
-import { LastTrainingSeen, myData } from "../utils/myData";
-import { topics } from "../utils/topics";
-import { trainingsAvailable } from "../utils/trainings";
 import { useAuth } from "./AuthContext";
 
 type TrainingsContextProviderProps = {
@@ -40,7 +36,7 @@ export type Classes = {
   slug: string,
   urlVideo: string,
   description: string,
-  watched: boolean,
+  VideoWatched?: any[],
   resources: Resources
 }
 
@@ -80,7 +76,7 @@ type Context = {
   handleShowTopics: (topicId: string) => void;
   handleCurrentVideo: (currentClass: Classes) => void;
   handleChangeVideo: (topicData: any) => void;
-  markVideoAsCompleted: (videoId: string) => void;
+  markVideoAsCompleted: (video: Classes) => void;
 }
 
 const TrainingsContext = createContext({} as Context)
@@ -109,8 +105,12 @@ function TrainingsContextProvider({ children }: TrainingsContextProviderProps) {
     setUrlVideo(nextClass.urlVideo)
   }
 
-  async function markVideoAsCompleted(videoId: string) {
-    await api.post(`/class/update/${videoId}`)
+  async function markVideoAsCompleted(video: Classes) {
+    await api.post(`/class/update/${video.id}`, {
+      userId: user.id,
+      topicId: video.topicId,
+      trainingId: video.trainingId
+    })
   }
   return (
     <TrainingsContext.Provider value={{

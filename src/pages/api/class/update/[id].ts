@@ -1,17 +1,16 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { PrismaClient } from '@prisma/client'
-
-const prisma = new PrismaClient()
+import { client } from "../../../../prisma/client";
 
 export default async function handle(req: NextApiRequest, res: NextApiResponse) {
 
   const id = req.query.id as string
-  const classVideo = await prisma.class.update({
-    where: {
-      id
-    },
+  const { topicId, trainingId, userId } = req.body
+  const classVideo = await client.videoWatched.create({
     data: {
-      watched: true
+      videoId: id,
+      topicId,
+      trainingId,
+      userId
     }
   })
 

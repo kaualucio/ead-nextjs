@@ -3,7 +3,7 @@ import { v4 as uuid } from 'uuid'
 import { client } from "../../../prisma/client";
 
 export default async function handle(req: NextApiRequest, res: NextApiResponse) {
-  const { title, slug, urlVideo, description, topicId, trainingId, watched, resources } = req.body
+  const { title, slug, urlVideo, description, topicId, trainingId, resources } = req.body
 
   const classVideo = await client.class.create({
     data: {
@@ -13,7 +13,6 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
       slug,
       urlVideo,
       description,
-      watched,
       resources,
       trainingId
     }

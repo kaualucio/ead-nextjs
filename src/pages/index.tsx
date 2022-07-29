@@ -6,12 +6,14 @@ import { FaRegArrowAltCircleUp } from 'react-icons/fa'
 
 import type { NextPageWithLayout } from './_app'
 
-import MotiveSingle from '../components/HomePageComponents/MotiveSingle'
+import {MotiveSingle} from '../components/HomePageComponents/MotiveSingle'
 import {TrainingContainer} from '../components/HomePageComponents/TrainingContainer'
 import {TrainingInformation} from '../components/HomePageComponents/TrainingInformation'
 import { LinkButton } from '../components/HomePageComponents/LinkButton'
-import { training } from '../utils/training'
 import { Layout } from '../components/Layout'
+
+import { training } from '../utils/training'
+import { motives } from '../utils/motives'
 
 const Home: NextPageWithLayout = () => {
   const trainingsInfo = training
@@ -56,11 +58,11 @@ const Home: NextPageWithLayout = () => {
               <h2 className="text-text-color text-center text-4xl font-bold mb-4">Por que escolher a  <span className="text-primary">(nome da plataforma)</span>?</h2>
               <Fade bottom>
                 <div className="mt-16 w-4/5 mx-auto grid lg:grid-cols-3 md:-grid-cols-2 grid-cols-1 gap-3">
-                  <MotiveSingle title="Motive 1" legend="Professores mais que qualificados para te ensinar tudo que você precisa saber." />
-                  <MotiveSingle title="Motive 2" legend="Suporte 24h para sanar todas as sua dúvidas além da nossa comunidade." />
-                  <MotiveSingle title="Motive 3" legend="Conecte-se com outros alunos em nossa comunidade do (…)  (melhorar esse motivo)" />
-                  <MotiveSingle title="Motive 4" legend="Você não precisará de nenhum conhecimento prévio para iniciar, você irá aprender do absoluto zero até o avançado" />
-                  <MotiveSingle title="Motive 5" legend="Mentorias semanais com os educadores da plataforma." />
+                  {
+                    motives.map((motive) => (
+                      <MotiveSingle key={motive.id} title={motive.title} legend={motive.label} />
+                    ))
+                  }
                 </div>
               </Fade>
             </section>
@@ -72,7 +74,7 @@ const Home: NextPageWithLayout = () => {
               <div className="mt-16 ">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
                   {
-                    trainingsInfo.map((training) => (
+                    trainingsInfo.map((training: any) => (
                       <TrainingContainer key={training.id} id={training.id} title={training.title} index={0} active={activeTrainingInformation} setActiveTrainingInformation={setActiveTrainingInformation} />
                     ))
                   }

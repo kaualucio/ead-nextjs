@@ -14,19 +14,19 @@ datasource db {
 }
 
 model User {
-  id                String   @id @unique @default(uuid())
+  id                String         @id @unique @default(uuid())
   name              String
-  email             String   @unique
+  email             String         @unique
   password          String
   urlImage          String
   hasTrainingAccess String
-  lastTrainingSeen  Json?
-  created_at        DateTime @default(now())
-  updated_at        DateTime @default(now())
+  created_at        DateTime       @default(now())
+  updated_at        DateTime       @default(now())
+  VideoWatched      VideoWatched[]
 }
 
 model Training {
-  id             String     @id @unique @default(uuid())
+  id             String         @id @unique @default(uuid())
   title          String
   slug           String
   description    String
@@ -37,8 +37,9 @@ model Training {
   educator       Educator[]
   topics         Topic[]
   classes        Class[]
-  created_at     DateTime   @default(now())
-  updated_at     DateTime   @default(now())
+  created_at     DateTime       @default(now())
+  updated_at     DateTime       @default(now())
+  VideoWatched   VideoWatched[]
 }
 
 model Educator {
@@ -54,34 +55,49 @@ model Educator {
 }
 
 model Topic {
-  id          String    @id @unique @default(uuid())
-  training    Training? @relation(fields: [trainingId], references: [id])
-  trainingId  String?
-  educator    Educator? @relation(fields: [educatorId], references: [id])
-  educatorId  String?
-  title       String
-  slug        String
-  description String
-  totalVideos Int
-  totalTime   Int
-  resources   Json
-  classes     Class[]
-  created_at  DateTime  @default(now())
-  updated_at  DateTime  @default(now())
+  id           String         @id @unique @default(uuid())
+  training     Training?      @relation(fields: [trainingId], references: [id])
+  trainingId   String?
+  educator     Educator?      @relation(fields: [educatorId], references: [id])
+  educatorId   String?
+  title        String
+  slug         String
+  description  String
+  totalVideos  Int
+  totalTime    Int
+  resources    Json
+  classes      Class[]
+  created_at   DateTime       @default(now())
+  updated_at   DateTime       @default(now())
+  VideoWatched VideoWatched[]
 }
 
 model Class {
-  id          String    @id @unique @default(uuid())
-  topic       Topic?    @relation(fields: [topicId], references: [id])
-  topicId     String?
-  training    Training? @relation(fields: [trainingId], references: [id])
-  trainingId  String?
-  title       String
-  slug        String
-  urlVideo    String
-  description String
-  watched     Boolean
-  resources   Json
-  created_at  DateTime  @default(now())
-  updated_at  DateTime  @default(now())
+  id           String         @id @unique @default(uuid())
+  topic        Topic?         @relation(fields: [topicId], references: [id])
+  topicId      String?
+  training     Training?      @relation(fields: [trainingId], references: [id])
+  trainingId   String?
+  title        String
+  slug         String
+  urlVideo     String
+  description  String
+  resources    Json
+  created_at   DateTime       @default(now())
+  updated_at   DateTime       @default(now())
+  VideoWatched VideoWatched[]
+}
+
+model VideoWatched {
+  id         String    @id @unique @default(uuid())
+  video      Class?    @relation(fields: [videoId], references: [id])
+  videoId    String?
+  topic      Topic?    @relation(fields: [topicId], references: [id])
+  topicId    String?
+  training   Training? @relation(fields: [trainingId], references: [id])
+  trainingId String?
+  user       User?     @relation(fields: [userId], references: [id])
+  userId     String?
+  created_at DateTime  @default(now())
+  updated_at DateTime  @default(now())
 }
