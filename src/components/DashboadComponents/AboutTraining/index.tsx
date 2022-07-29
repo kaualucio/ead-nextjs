@@ -6,8 +6,8 @@ import { BiMoviePlay, BiTrophy } from 'react-icons/bi'
 
 import {IconLabel} from '../IconLabel'
 import { Frame } from '../../Frame'
-import { api } from '../../../services/api'
 import { useAuth } from '../../../context/AuthContext'
+import axios from 'axios'
 
 const AboutTraining = ({ training }: any) => {
   let { user } = useAuth()
@@ -16,7 +16,7 @@ const AboutTraining = ({ training }: any) => {
   
   
   useEffect(() => {
-    api.get(`/educator/training/${training.id}`).then(({data}) => {
+    axios.get(`/api/educator/training/${training.id}`).then(({data}) => {
       setEducator(data)
     })
     let qtyVideosWatchedByUser = 0

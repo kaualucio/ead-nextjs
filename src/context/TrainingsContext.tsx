@@ -1,5 +1,5 @@
+import axios from "axios";
 import { createContext, ReactNode, useContext, useState } from "react";
-import { api } from "../services/api";
 import { useAuth } from "./AuthContext";
 
 type TrainingsContextProviderProps = {
@@ -106,7 +106,7 @@ function TrainingsContextProvider({ children }: TrainingsContextProviderProps) {
   }
 
   async function markVideoAsCompleted(video: Classes) {
-    await api.post(`/class/update/${video.id}`, {
+    await axios.post(`/api/class/update/${video.id}`, {
       userId: user.id,
       topicId: video.topicId,
       trainingId: video.trainingId

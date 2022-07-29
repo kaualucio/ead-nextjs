@@ -2,8 +2,7 @@ import { useRouter } from "next/router";
 import { destroyCookie, parseCookies, setCookie } from "nookies";
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import jwt_decode from "jwt-decode";
-
-import { api } from "../services/api";
+import axios from "axios";
 
 type AuthContextProviderProps = {
   children: ReactNode
@@ -48,7 +47,7 @@ const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
     const { 'access_token': access_token } = parseCookies()
     if (access_token) {
       const token: DecodedToken = jwt_decode(access_token)
-      api.post('/user/me', {
+      axios.post('/api/user/me', {
         userId: token.sub
       }).then(({data}) => {
         setUser(data)
@@ -64,7 +63,7 @@ const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
         return;
       }
 
-      const { data } = await api.post('/auth/login', {
+      const { data } = await axios.post('/api/auth/login', {
         email,
         password
       })

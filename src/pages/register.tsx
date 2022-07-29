@@ -7,7 +7,7 @@ import { useRouter } from 'next/router'
 import { Alert } from '../components/Alert'
 import { GetServerSideProps } from 'next'
 import { parseCookies } from 'nookies'
-import { api } from '../services/api'
+import axios from 'axios'
 
 const Register = () => {
   const [name, setName] = useState('')
@@ -47,7 +47,7 @@ const Register = () => {
 
     try {
       setLoading(true);
-      const { data } = await api.post('/auth/register', {
+      const { data } = await axios.post('/api/auth/register', {
         name, 
         email, 
         password, 
