@@ -4,4 +4,4 @@
 <strong>OBS: Todos os videos mostrados no app são apenas para fins didáticos e demonstração. <br/> Todos os créditos pela criação dos videos vão para o Gustavo Guanabara do canal Curso em Video.</strong>
 <br/>
 
-![Screenshot (7)](https://user-images.githubusercontent.com/60020363/181824285-f412c31f-08e5-4070-bdf7-8503990b3efc.png)
+![screen2](https://user-images.githubusercontent.com/60020363/192065853-37b53478-2563-4d64-ac11-3370cce2eb25.PNG)
